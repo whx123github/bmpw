@@ -1,0 +1,96 @@
+<configuration>
+
+
+<!--    <property name="logPath" value="D:/log/test1/"/>-->
+     <property name="logPath" value="/jt/bmlg/sqllog"/>
+
+
+    <!--输出到控制台-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%cyan([%d{yyyy-MM-dd HH:mm:ss.SSS}])===== [%thread] %highlight(%-5level) %logger{36} - %msg%n  </pattern>
+        </encoder>
+    </appender>
+
+
+    <!--系统INFO级别日志-滚动记录日志-->
+    <appender name="SYS_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值-->
+        <File>${logPath}/sys_info.log</File>
+
+
+        <!-- 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置滚动文件规则，如果直接使用 %d，默认格式是 yyyy-MM-dd-->
+            <fileNamePattern>${logPath}/sys_info.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!--保留30天的日志-->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level [%thread] %file:%line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+    </appender>
+
+
+
+
+
+    <!--系统INFO级别日志-滚动记录日志-->
+    <appender name="SYS_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--被写入的文件名，可以是相对目录，也可以是绝对目录，如果上级目录不存在会自动创建，没有默认值-->
+        <File>${logPath}/sys_error.log</File>
+
+
+        <!-- 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置滚动文件规则，如果直接使用 %d，默认格式是 yyyy-MM-dd-->
+            <fileNamePattern>${logPath}/sys_error.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <!--保留30天的日志-->
+        </rollingPolicy>
+
+        <encoder charset="UTF-8">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %level [%thread] %file:%line - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <append>true</append>
+    </appender>
+
+
+    <!--sql语句的输出-->
+    <appender name="sqlInfoAppender" class="ch.qos.logback.core.FileAppender">
+        <file>${logPath}/sql/sql.log</file>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--解决swagger的问题-->
+    <logger name="io.swagger.models.parameters.AbstractSerializableParameter" additivity="false" level="ERROR"/>
+
+    <logger name="com.jt.baimo.pw" level="DEBUG">
+        <appender-ref ref="sqlInfoAppender"/>
+    </logger>
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="SYS_INFO"/>
+        <appender-ref ref="SYS_ERROR"/>
+    </root>
+
+
+</configuration>

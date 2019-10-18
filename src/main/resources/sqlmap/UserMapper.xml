@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.UserMapper">
+
+
+
+    <select id="userDetails" resultType="com.jt.baimo.pw.vo.UserDetailsVo">
+        SELECT r.`status` headerUrlStatus,rn.`status` nicknameStatus,u.id,ry.`status` voiceUrlStatus,rm.`status` presentationStatus,
+        tu.url backgroundUrl,tu.type backgroundType,
+        u.id,u.nickname, u.sex, u.cityName, u.isVideoCert, u.headerUrl, u.birthday, u.lng, u.lat, u.isLogin,u.voiceUrl,
+        u.height,u.weight,u.presentation,u.cityCode,u.cityName,u.professionId, p.name professionName,u.closedReason,
+        a.`status` as aStatus, s.`name`, s.sort, s.url, s.exampleImage,s.color,
+        (select count(1) from attention where  targetId = #{userId}) attentionNum,
+        IF (at.uid IS NULL, 0, 1) isAttention
+        FROM `user` AS u
+        LEFT JOIN (
+        select id, addTime, uid ,(type +1)   type,url from album  where uid = #{uid} and status!=3 and price = 0
+        UNION all
+        select id, addTime, uid,type, url from review where uid=#{uid} and type  =1 and status!=3
+        order by type desc ,addTime desc ,id desc  limit 1
+        ) tu ON tu.uid = u.id
+        LEFT JOIN profession p ON p.id = u.professionId
+        LEFT JOIN review r ON r.uid = u.id AND r.type = 1
+        LEFT JOIN review ry ON ry.uid = u.id AND ry.type = 2
+        LEFT JOIN review rn ON rn.uid = u.id AND rn.type = 4
+        LEFT JOIN review rm ON rm.uid = u.id AND rm.type = 5
+        LEFT JOIN attention at ON at.uid = u.id AND at.uid = #{uid} AND at.targetId = #{userId}
+        LEFT JOIN authentication AS a ON u.id = a.uid
+        LEFT JOIN skill AS s ON a.gameId = s.id
+        where u.id = #{uid}
+        GROUP BY u.id
+    </select>
+
+
+
+</mapper>

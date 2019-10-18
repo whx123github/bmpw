@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.UidPushMapper">
+
+    <select id="viewSystemList" resultType="com.jt.baimo.pw.vo.SystemPushVo">
+        SELECT systemPush.content content, systemPush.updateTime updateTime, systemPush.type type, NULL sUid, NULL rUid
+        FROM systemPush
+        WHERE systemPush.type = 2
+        <if test="lastTime != null">
+            and  <![CDATA[  updateTime < #{lastTime}]]>
+        </if>
+        UNION ALL
+        SELECT uidPush.content content, uidPush.updateTime updateTime, uidPush.type type, uidPush.sUid sUid, uidPush.rUid rUid
+        FROM uidPush
+        where rUid = #{userId}
+        <if test="lastTime != null">
+            and  <![CDATA[  updateTime < #{lastTime}]]>
+        </if>
+        ORDER BY
+        updateTime DESC
+        LIMIT #{size}
+    </select>
+</mapper>

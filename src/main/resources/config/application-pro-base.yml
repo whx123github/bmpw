@@ -1,0 +1,31 @@
+server:
+  port: 8002
+spring:
+  redis:
+    host: r-uf660a9daf4ccc94.redis.rds.aliyuncs.com #Redis服务器地址
+    port: 6379 #Redis服务器连接端口
+    password: Bm2019!!!
+    timeout: 3600
+    database: 1
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+    time-zone: GMT+8
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://106.15.242.24:3306/bmpw?useUnicode=true&useSSL=false&serverTimezone=CTT&characterEncoding=UTF-8&tinyInt1isBit=false&allowMultiQueries=true
+    username: bmpw
+    password: (PWBM2019#
+bm:
+  pay:
+    aliNotifyUrl: http://47.102.221.77:${server.port}/pay/notifyUrl
+  common:
+    jPushAppKey: eebeffc391b299b3504e80a6
+    jPushMasterSecret: d62b1a4012be0be703dba939
+    jPushApnsProduction: true
+jwt:
+  notAuthSwgUrls:
+    - /swagger-ui.html
+    - /webjars
+    - /swagger-resources
+    - /v2/api-docs

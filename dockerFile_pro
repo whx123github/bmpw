@@ -1,0 +1,9 @@
+FROM 99taxis/mini-java8
+
+ADD target/*.jar bmlg.jar
+
+EXPOSE 8090
+
+ENV LANG zh_CN.UTF-8
+
+ENTRYPOINT ["java","-Duser.timezone=GMT+08","-Dfile.encoding=UTF-8", "-jar", "bmlg.jar"]

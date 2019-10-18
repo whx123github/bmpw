@@ -1,0 +1,14 @@
+mybatis-plus:
+  type-aliases-package: com.jintian.baimo.baimocity.model
+  mapper-locations: classpath:/sqlmap/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      table-underline: false
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    call-setters-on-nulls: true
+    map-underscore-to-camel-case: false
+
+

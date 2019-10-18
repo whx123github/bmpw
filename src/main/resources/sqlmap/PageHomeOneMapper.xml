@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.PageHomeOneMapper">
+
+    <select id="getUserInfo" resultType="com.jt.baimo.pw.vo.HomeOneUserInfoVo">
+        select
+        if(rn.status=3,"昵称违规",u.nickname) nickname
+        ,if(rh.status=3,null,u.headerUrl) headerUrl
+        ,if(rv.status =3,null,u.voiceUrl) voiceUrl
+        ,if(rp.status=3,null,u.presentation) presentation
+        ,u.*
+        ,(select count(1) from attention where  targetId =#{targetId}) attentionNum
+        ,(select count(1)  from attention where targetId =#{targetId} and uid = #{userId} ) isAttention
+        ,( select count(1) from  authentication where uid= #{targetId} and status= 2) authNum
+        , p.name professionName
+        ,tu.url backgroundUrl,tu.type backgroundType
+          from user u
+        left join profession p on p.id = u.professionId
+        left join review rh on rh.uid = u.id and rh.type=1
+        left join review rv on rv.uid = u.id and rv.type=2
+        left join review rn on rn.uid = u.id and rn.type=4
+		left join review rp on rp.uid = u.id  and rp.type = 5
+        left join (
+                        select id, addTime, uid ,(type +1)   type,url from album  where uid =#{targetId} and status!=3 and price = 0
+                        UNION all
+                        select id, addTime, uid,type, url from review where uid=#{targetId} and type  =1 and status!=3
+                        order by type desc ,addTime desc ,id desc  limit 1
+                      ) tu on tu.uid = u.id
+        where u.id = #{targetId}
+    </select>
+</mapper>

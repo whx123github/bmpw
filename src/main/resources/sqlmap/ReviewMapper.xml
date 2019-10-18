@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.ReviewMapper">
+
+
+
+    <update id="replaceReviews">
+        <foreach collection="reviews" item="item" separator=";">
+            replace into review (url,uid,addTime,updateTime,type) VALUES
+            (#{item.url},#{userId},now(),now(),#{item.type})
+        </foreach>
+    </update>
+
+
+    <update id="replaceReview">
+            replace into review (url,uid,addTime,updateTime,type) VALUES
+            (#{url},#{userId},now(),now(),#{type})
+    </update>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.AttentionMapper">
+
+
+    <insert id="replaceAttention">
+        replace into attention (uId,targetId,addTime) values(#{uId},#{targetId},now())
+    </insert>
+
+
+    <select id="pageList" resultType="com.jt.baimo.pw.vo.AttentionPageListVo">
+        select
+        if(rn.status=3,"昵称违规",u.nickname) nickname
+        ,if(rh.status=3,null,u.headerUrl) headerUrl
+        ,u.*
+        ,a.id attentionId
+        ,IFNULL(at.authNum,0) authNum
+        from attention a
+        left join user u on u.id = a.targetId
+        left join review rh on rh.uid = u.id and rh.type=1
+        left join review rn on rn.uid = u.id and rn.type=4
+        left join (select count(1) authNum,uid from authentication where status=2 group by uid ) at on at.uid =
+        a.targetId
+        where a.uId = #{userId}
+        <if test="lastAttentionId!=null">
+            <![CDATA[   AND  a.id < #{lastAttentionId}   ]]>
+        </if>
+        order by a.id desc
+        limit #{pageSize}
+    </select>
+
+
+    <select id="getAttentionId" resultType="string">
+        select  u.jPushId from attention a
+        JOIN intimity  i ON a.uid = i.uid
+        LEFT  JOIN user u ON a.uid = u.id
+        where   a.targetId = #{userId}
+        and i.dynamicType =1
+        and (u.jPushId != "" or u.jPushId != null)
+    </select>
+</mapper>

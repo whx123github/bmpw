@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.PageHomeMapper">
+    <select id="getUserList" resultType="com.jt.baimo.pw.vo.HomeUserListVo">
+        select u.*
+        , IFNULL( floor(( st_distance ( point ( lng, lat ), point ( #{user.lng}, #{user.lat}) ) * 111195 )),0) sqlDistance
+        , IFNULL( an.attentionNum,0) attentionNum
+        , s.name skillName , s.color skillColor
+        from user u
+        left join review rh on rh.uid = u.id and rh.type = 1
+        left join review rn on rn.uid = u.id and rn.type = 4
+        left join authentication a on a.uid = u.id
+        <if test="skillId != null">
+            and a.gameId = #{skillId}
+        </if>
+        <if test="gwTypeId != null">
+            and a.gwTypeId = #{gwTypeId}
+        </if>
+        left join skill s on s.id = a.gameId
+        left join (select count(1) attentionNum , targetId from attention group by targetId) an on u.id = an.targetId
+        where a.status = 2 and rh.`status`!=3 and (rn.`status` != 3 or rn.`status` is null)  and u.id != #{user.id}
+        <if test="skillId != null">
+            and a.gameId = #{skillId}
+        </if>
+        <if test="lastDistance != null">
+            HAVING (sqlDistance=#{lastDistance} and u.uid>#{lastUid} ) or (sqlDistance>#{lastDistance})
+        </if>
+        order by u.isLogin desc,sqlDistance,u.uid
+        <if test="pageSize != null">
+            limit #{pageSize}
+        </if>
+    </select>
+
+
+
+    <select id="searchUserList" resultType="com.jt.baimo.pw.vo.HomeUserSearchListVo">
+        select u.*
+        , a.updateTime auditTime
+        from user u
+        left join review rh on rh.uid = u.id and rh.type = 1
+        left join review rn on rn.uid = u.id and rn.type = 4
+        left join (select * from authentication where status=2 group by uid order by updateTime desc ) a on a.uid = u.id
+        <where>
+            a.status = 2 and rh.`status`!=3 and (rn.`status` != 3 or rn.`status` is null)   and u.id != #{userId}
+            <if test="nickname != null and nickname != '' ">
+                and u.nickname like CONCAT('%',#{nickname},'%')
+            </if>
+            <if test="lastUid != null">
+                <![CDATA[   and    (a.updateTime = #{lastAuditTime} and u.uid>#{lastUid} ) or   (a.updateTime < #{lastAuditTime}) ]]>
+            </if>
+        </where>
+        order by a.updateTime desc ,u.uid
+        <if test="pageSize != null">
+            limit #{pageSize}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,4 @@
+spring:
+  profiles:
+    include: [pro-base,mybatisPlus,log,jwt]
+

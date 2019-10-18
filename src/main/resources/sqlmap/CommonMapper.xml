@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.CommonMapper">
+
+
+    <select id="listSelect" resultType="com.jt.baimo.pw.vo.SelectListVo">
+        select id,name from ${typeName} where status = 1
+    </select>
+
+    <select id="listMultiSelect" resultType="com.jt.baimo.pw.vo.SelectMultiListVo">
+        select id,name,pid from ${typeName} where status = 1
+    </select>
+
+
+    <select id="getTargetCommonInfo" resultType="com.jt.baimo.pw.vo.TargetCommonInfoVo">
+            select
+            if(rn.status=3,"昵称违规",u.nickname) nickname
+            ,if(rh.status=3,null,u.headerUrl) headerUrl
+            ,u.*
+            from user u
+            left join review rh on u.id = rh.uid and rh.type =1
+            left join review rn on u.id = rn.uid and rn.type =4
+            where u.id = #{targetId}
+    </select>
+
+    <!--获取用户技能认证的详细信息-->
+    <select id="getUserSkillPwAllInfo" resultType="com.jt.baimo.pw.vo.UserSkillPwAllInfoVo">
+        select a.*
+        ,s.name skillName , s.url  skillUrl, s.exampleImage  skillExampleImage , s.color  skillColor
+        from authentication a
+        left join skill s on s.id = a.gameId
+        where a.id = #{id}
+    </select>
+
+
+</mapper>

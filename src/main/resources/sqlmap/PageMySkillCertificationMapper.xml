@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.PageMySkillCertificationMapper">
+
+    <select id="getMySubmit" resultType="com.jt.baimo.pw.vo.SkillCertificationMySubmitVo">
+        select a.*
+        , s.name skillName , s.url skillUrl
+		, CONCAT("您已通过",m.name,"认证")  gwTypeName
+        from authentication a
+        left join  skill s on a.gameId = s.id
+		left join menu m on a.gwTypeId = m.id
+        where a.status = 2 and a.uid =#{userId}
+        and a.gwTypeId = #{gwTypeId}
+
+    </select>
+</mapper>

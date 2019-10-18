@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.PageMySkillPwMapper">
+
+
+
+
+    <!--获取某个所有的认证的技能-->
+    <select id="getTargetSkills" resultType="com.jt.baimo.pw.vo.MySkillPwTargetSkillVo">
+        select a.*
+        ,s.name skillName
+        ,if(rn.status=3,"昵称违规",u.nickname) nickname
+        ,if(rh.status=3,null,u.headerUrl) headerUrl
+        from authentication a
+        left join skill s on s.id = a.gameId
+        left join user u on u.id = a.uid
+        left join review rh on rh.uid = u.id and rh.type=1
+        left join review rn on rn.uid = u.id and rn.type=4
+        where a.uid = #{targetId} and a.status=2
+    </select>
+
+    <select id="getBuyPwList" resultType="com.jt.baimo.pw.vo.MySkillPwBuyPwListVo">
+        select uo.*
+        ,bu.nickname buyerNickname ,brn.status buyerNicknameStatus, bu.id buyerId
+        ,su.nickname sellerNickname ,srn.status sellerNicknameStatus, su.id sellerId
+        ,s.name skillName , s.url skillUrl
+        from userOrder uo
+        left join user bu on bu.id = uo.buyerId
+        left join user su on su.id = uo.sellerId
+        left join review brn on brn.uid = bu.id and brn.type=4
+        left join review srn on srn.uid = su.id and srn.type=4
+        left join skill s on s.id = uo.buySkillId
+        where
+        uo.buyerId = #{userId} and uo.addTime >= #{recentlyTime} and uo.type = -2
+        <if test="lastTime != null">
+            <![CDATA[   AND  uo.addTime < #{lastTime}   ]]>
+        </if>
+        ORDER BY uo.addTime desc
+        <if test="pageSize != null">
+            limit #{pageSize}
+        </if>
+
+    </select>
+
+    <select id="getSellPwList" resultType="com.jt.baimo.pw.vo.MySkillPwSellPwListVo">
+        select uo.*
+        ,bu.nickname buyerNickname ,brn.status buyerNicknameStatus, bu.id buyerId
+        ,su.nickname sellerNickname ,srn.status sellerNicknameStatus, su.id sellerId
+        ,s.name skillName , s.url skillUrl
+        from userOrder uo
+        left join user bu on bu.id = uo.buyerId
+        left join user su on su.id = uo.sellerId
+        left join review brn on brn.uid = bu.id and brn.type=4
+        left join review srn on srn.uid = su.id and srn.type=4
+        left join skill s on s.id = uo.buySkillId
+        where
+        uo.sellerId = #{userId} and uo.addTime >= #{recentlyTime} and uo.type = -2 and payTime is not null
+        <if test="lastTime != null">
+            <![CDATA[   AND  uo.addTime< #{lastTime}   ]]>
+        </if>
+        ORDER BY uo.addTime desc
+        <if test="pageSize != null">
+            limit #{pageSize}
+        </if>
+
+    </select>
+
+
+    <select id="getOnePwInfo" resultType="com.jt.baimo.pw.vo.MySkillPwOnePwInfoVo">
+        select uo.*
+        , if(brn.status=3,"昵称违规",bu.nickname) buyerNickname, bu.id buyerId
+        ,if(srn.status=3,"昵称违规",su.nickname) sellerNickname, su.id sellerId
+        ,s.name skillName , s.url skillUrl
+        from userOrder uo
+        left join user bu on bu.id = uo.buyerId
+        left join user su on su.id = uo.sellerId
+        left join review brn on brn.uid = bu.id and brn.type=4
+        left join review srn on srn.uid = su.id and srn.type=4
+        left join skill s on s.id = uo.buySkillId
+        where
+        uo.id = #{id}
+    </select>
+
+</mapper>

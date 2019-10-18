@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jt.baimo.pw.mapper.AlbumMapper">
+
+    <select id="selectUserAlbumList" resultType="com.jt.baimo.pw.vo.UserAlbumVo">
+        SELECT a.*,us.id userId
+        FROM album AS a
+        LEFT JOIN userUnLockAlbum us ON a.id = us.albumId AND us.uid = #{userId}
+        WHERE u.id = #{uid} AND a.status != 3
+        ORDER BY a.addTime DESC,a.id DESC
+    </select>
+</mapper>

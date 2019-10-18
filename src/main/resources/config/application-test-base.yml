@@ -1,0 +1,26 @@
+server:
+  port: 8004
+spring:
+  redis:
+    host: 47.101.39.184 #Redis服务器地址
+    port: 6404 #Redis服务器连接端口
+    password: jtbmpwtest2019
+    timeout: 3600
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+    time-zone: GMT+8
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:p6spy:mysql://47.101.39.184:3309/bmpw?useUnicode=true&useSSL=false&serverTimezone=CTT&characterEncoding=UTF-8&tinyInt1isBit=false&allowMultiQueries=true
+    username: root
+    password: jtbmpwtest2019
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+bm:
+  pay:
+    aliNotifyUrl: http://47.101.39.184:${server.port}/pay/notifyUrl
+  common:
+    jPushAppKey: 0c52486a131a7d80126f4890
+    jPushMasterSecret: 9d55a199547c38141f4c7caf
+    jPushApnsProduction: false
+
